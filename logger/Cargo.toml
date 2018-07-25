@@ -1,7 +1,9 @@
 [package]
 name = "coreutils_logger"
+license = "MIT"
 version = "0.1.0"
 authors = ["Francesco Cina <ufoscout@gmail.com>"]
+description = "Logger configuration based on fern."
 
 [dependencies]
 chrono = "0.4"

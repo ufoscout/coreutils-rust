@@ -1,7 +1,9 @@
 [package]
 name = "coreutils_jwt"
+license = "MIT"
 version = "0.1.0"
 authors = ["Francesco Cina <ufoscout@gmail.com>"]
+description = "Json Web Token service."
 
 [dependencies]
 log = "0.4"

@@ -1,7 +1,9 @@
 [package]
 name = "coreutils_module"
+license = "MIT"
 version = "0.1.0"
 authors = ["Francesco Cina <ufoscout@gmail.com>"]
+description = "Small building block for modularized applications."
 
 [dependencies]
 log = "0.4"
