@@ -1,0 +1,10 @@
+[package]
+name = "coreutils_module"
+version = "0.1.0"
+authors = ["Francesco Cina <ufoscout@gmail.com>"]
+
+[dependencies]
+log = "0.4"
+
+[dev-dependencies]
+lazy_static = "1.0"

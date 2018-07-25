@@ -1,0 +1,9 @@
+[workspace]
+
+members = [
+    "auth",
+    "json",
+    "jwt",
+    "logger",
+    "module"
+] 
