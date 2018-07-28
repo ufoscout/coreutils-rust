@@ -1,0 +1,17 @@
+[package]
+name = "coreutils_module_core"
+license = "MIT"
+version = "0.2.0"
+authors = ["Francesco Cina <ufoscout@gmail.com>"]
+description = "Core Module and services."
+
+[dependencies]
+config = "0.9"
+coreutils_json = { path = "../json" }
+coreutils_jwt = { path = "../jwt" }
+coreutils_logger = { path = "../logger" }
+coreutils_module = { path = "../module" }
+log = "0.4"
+
+[dev-dependencies]
+lazy_static = "1.0"
