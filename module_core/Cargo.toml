@@ -7,10 +7,10 @@ description = "Core Module and services."
 
 [dependencies]
 config = "0.9"
-coreutils_json = { path = "../json" }
-coreutils_jwt = { path = "../jwt" }
-coreutils_logger = { path = "../logger" }
-coreutils_module = { path = "../module" }
+coreutils_json = { path = "../json", version = "0.2.0" }
+coreutils_jwt = { path = "../jwt", version = "0.2.0" }
+coreutils_logger = { path = "../logger", version = "0.2.0" }
+coreutils_module = { path = "../module", version = "0.2.0" }
 log = "0.4"
 
 [dev-dependencies]
