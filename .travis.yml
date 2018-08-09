@@ -17,4 +17,4 @@ env:
     
 script:
   - cargo install --debug cargo-make
-  - cargo make ci-flow 
+  - cargo make workspace-ci-flow
