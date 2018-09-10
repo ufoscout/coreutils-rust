@@ -8,15 +8,14 @@ extern crate failure_derive;
 pub mod model;
 
 use std::collections::HashMap;
+use model::Owned;
 
 #[derive(Fail, Debug)]
 pub enum AuthError {
     #[fail(display = "UnAuthenticatedError")]
     UnAuthenticatedError {},
-    #[fail(display = "NoRequiredRole [{}]", role)]
-    NoRequiredRole { role: String },
-    #[fail(display = "NoRequiredPermission [{}]", permission)]
-    NoRequiredPermission { permission: String },
+    #[fail(display = "UnAuthorizedError [{}]", message)]
+    UnAuthorizedError { message: String },
 }
 
 pub struct AuthService {
@@ -68,7 +67,7 @@ impl<'a> AuthContext<'a> {
     pub fn has_role(&self, role: &str) -> Result<&AuthContext, AuthError> {
         self.is_authenticated()?;
         if !self.has_role_bool(&role) {
-            return Err(AuthError::NoRequiredRole { role: role.to_string() });
+            return Err(AuthError::UnAuthorizedError { message: format!("User [{}] does not have the required role [{}]", self.auth.id, role ) });
         };
         Ok(&self)
     }
@@ -80,14 +79,14 @@ impl<'a> AuthContext<'a> {
                 return Ok(&self);
             };
         };
-        return Err(AuthError::NoRequiredRole { role: "".to_string() });
+        return Err(AuthError::UnAuthorizedError { message: format!("User [{}] does not have the required role", self.auth.id ) });
     }
 
     pub fn has_all_roles(&self, roles: &[&str]) -> Result<&AuthContext, AuthError> {
         self.is_authenticated()?;
         for role in roles {
             if !self.has_role_bool(*role) {
-                return Err(AuthError::NoRequiredRole { role: role.to_string() });
+                return Err(AuthError::UnAuthorizedError { message: format!("User [{}] does not have the required role [{}]", self.auth.id, role ) });
             };
         };
         return Ok(&self);
@@ -96,7 +95,7 @@ impl<'a> AuthContext<'a> {
     pub fn has_permission(&self, permission: &str) -> Result<&AuthContext, AuthError> {
         self.is_authenticated()?;
         if !self.has_permission_bool(&permission) {
-            return Err(AuthError::NoRequiredPermission { permission: permission.to_string() });
+            return Err(AuthError::UnAuthorizedError { message: format!("User [{}] does not have the required permission [{}]", self.auth.id, permission ) });
         };
         Ok(&self)
     }
@@ -108,17 +107,41 @@ impl<'a> AuthContext<'a> {
                 return Ok(&self);
             };
         };
-        return Err(AuthError::NoRequiredPermission { permission: "".to_string() });
+        return Err(AuthError::UnAuthorizedError { message: format!("User [{}] does not have the required permission", self.auth.id ) });
     }
 
     pub fn has_all_permissions(&self, permissions: &[&str]) -> Result<&AuthContext, AuthError> {
         self.is_authenticated()?;
         for permission in permissions {
             if !self.has_permission_bool(*permission) {
-                return Err(AuthError::NoRequiredPermission { permission: permission.to_string() });
+                return Err(AuthError::UnAuthorizedError { message: format!("User [{}] does not have the required permission [{}]", self.auth.id, permission ) });
             };
         };
         return Ok(&self);
+    }
+
+    pub fn is_owner<T: Owned>(&self, obj: &T) -> Result<&AuthContext, AuthError> {
+        if self.auth.id == obj.get_owner_id() {
+            return Ok(&self);
+        } else {
+           return Err(AuthError::UnAuthorizedError { message: format!("User [{}] is not the owner. User id [{}], owner id: [{}]", self.auth.id, self.auth.id, obj.get_owner_id() ) });
+        }
+    }
+
+    pub fn is_owner_or_has_role<T: Owned>(&self, obj: &T, role: &str) -> Result<&AuthContext, AuthError> {
+        if (self.auth.id == obj.get_owner_id()) || self.has_role_bool(role) {
+            return Ok(&self);
+        } else {
+           return Err(AuthError::UnAuthorizedError { message: format!("User [{}] is not the owner and does not have role [{}]. User id [{}], owner id: [{}]", self.auth.id, role, self.auth.id, obj.get_owner_id() ) });
+        }
+    }
+
+    pub fn is_owner_or_has_permission<T: Owned>(&self, obj: &T, permission: &str) -> Result<&AuthContext, AuthError> {
+        if (self.auth.id == obj.get_owner_id()) || self.has_permission_bool(permission) {
+            return Ok(&self);
+        } else {
+           return Err(AuthError::UnAuthorizedError { message: format!("User [{}] is not the owner and does not have permission [{}]. User id [{}], owner id: [{}]", self.auth.id, permission, self.auth.id, obj.get_owner_id() ) });
+        }
     }
 
     fn has_role_bool(&self, role: &str) -> bool {
@@ -246,7 +269,7 @@ mod test_role_provider {
 #[cfg(test)]
 mod test_auth_context {
 
-    use super::model::{Auth, Role};
+    use super::model::{Auth, Role, Owned};
 
     #[test]
     fn should_be_authenticated() {
@@ -578,4 +601,161 @@ mod test_auth_context {
         assert!(auth_context.has_all_permissions(&["delete", "superDelete"]).is_err());
     }
 
+    #[test]
+    fn should_be_the_owner() {
+        let roles = vec![];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["USER".to_string(), "ADMIN".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner(&Ownable{owner_id: 0}).is_ok());
+    }
+
+    #[test]
+    fn should_not_be_the_owner() {
+        let roles = vec![];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["USER".to_string(), "ADMIN".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner(&Ownable{owner_id: 1}).is_err());
+    }
+
+    #[test]
+    fn should_be_allowed_if_not_the_owner_but_has_role() {
+        let roles = vec![
+           Role {
+                id: 0,
+                name: "ROLE_1".to_string(),
+                permissions: vec!["access_1".to_string()],
+            },
+        ];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner_or_has_role(&Ownable{owner_id: 1}, "ROLE_1").is_ok());
+    }
+
+    #[test]
+    fn should_be_allowed_if_the_owner_but_not_has_role() {
+        let roles = vec![
+           Role {
+                id: 0,
+                name: "ROLE_1".to_string(),
+                permissions: vec!["access_1".to_string()],
+            },
+        ];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner_or_has_role(&Ownable{owner_id: 0}, "ROLE_2").is_ok());
+    }
+
+    #[test]
+    fn should_not_be_allowed_if_not_the_owner_and_not_has_role() {
+        let roles = vec![
+           Role {
+                id: 0,
+                name: "ROLE_1".to_string(),
+                permissions: vec!["access_1".to_string()],
+            },
+        ];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner_or_has_role(&Ownable{owner_id: 1}, "ROLE_2").is_err());
+    }
+
+    #[test]
+    fn should_be_allowed_if_not_the_owner_but_has_permission() {
+        let roles = vec![
+           Role {
+                id: 0,
+                name: "ROLE_1".to_string(),
+                permissions: vec!["access_1".to_string()],
+            },
+        ];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner_or_has_permission(&Ownable{owner_id: 1}, "access_1").is_ok());
+    }
+
+    #[test]
+    fn should_be_allowed_if_the_owner_but_not_has_permission() {
+        let roles = vec![
+           Role {
+                id: 0,
+                name: "ROLE_1".to_string(),
+                permissions: vec!["access_1".to_string()],
+            },
+        ];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner_or_has_permission(&Ownable{owner_id: 0}, "access_2").is_ok());
+    }
+
+    #[test]
+    fn should_not_be_allowed_if_not_the_owner_and_not_has_permission() {
+        let roles = vec![
+           Role {
+                id: 0,
+                name: "ROLE_1".to_string(),
+                permissions: vec!["access_1".to_string()],
+            },
+        ];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService{ roles_provider: provider};
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string()],
+        };
+        let auth_context = auth_service.auth( user );
+        assert!(auth_context.is_owner_or_has_permission(&Ownable{owner_id: 1}, "access_2").is_err());
+    }
+
+    struct Ownable {
+        owner_id: i64
+    }
+
+    impl Owned for Ownable {
+        fn get_owner_id(&self) -> i64 {
+            return self.owner_id;
+        }
+    }
 }

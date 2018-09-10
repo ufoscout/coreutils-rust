@@ -13,3 +13,7 @@ pub struct Role {
     pub name: String,
     pub permissions: Vec<String>
 }
+
+pub trait Owned {
+    fn get_owner_id(&self) -> i64;
+}
