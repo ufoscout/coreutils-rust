@@ -1,16 +1,16 @@
 [package]
 name = "coreutils_module_core"
 license = "MIT"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["Francesco Cina <ufoscout@gmail.com>"]
 description = "Core Module and services."
 
 [dependencies]
 config = "0.9"
-coreutils_json = { path = "../json", version = "0.2.1" }
-coreutils_jwt = { path = "../jwt", version = "0.2.1" }
-coreutils_logger = { path = "../logger", version = "0.2.1" }
-coreutils_module = { path = "../module", version = "0.2.1" }
+coreutils_json = { path = "../json", version = "0.3.0" }
+coreutils_jwt = { path = "../jwt", version = "0.3.0" }
+coreutils_logger = { path = "../logger", version = "0.3.0" }
+coreutils_module = { path = "../module", version = "0.3.0" }
 log = "0.4"
 
 [dev-dependencies]
