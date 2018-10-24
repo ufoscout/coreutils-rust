@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9f32768c-9b52-47c9-978b-e73a0c6df908" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/auth/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/src/model.rs" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/model.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/json/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jwt/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/jwt/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jwt/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/jwt/src/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jwt/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/jwt/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logger/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/logger/src/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logger/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/logger/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/module/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/module/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/module_core/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/module_core/src/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/module_core/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/module_core/src/lib.rs" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/target/" />
+    <ignored path="$PROJECT_DIR$/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+    <option name="PARALLEL_COMPILATION" value="true" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="834167819">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.opened" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="gitignore" value="1" />
+          <entry key="rs" value="18" />
+          <entry key="toml" value="10" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="PLAIN_TEXT" value="1" />
+          <entry key="Rust" value="18" />
+          <entry key="TOML file" value="10" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="rs" value="122" />
+          <entry key="toml" value="13" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Rust" value="122" />
+          <entry key="TOML file" value="13" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/auth/src/lib.rs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="30" column="33" selection-start-line="30" selection-start-column="33" selection-end-line="30" selection-end-column="33" />
+              <folding>
+                <element signature="e#543#544#0" expanded="true" />
+                <element signature="e#580#581#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>time</find>
+      <find>time::get_time().sec</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>Local::now().timestamp()</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/jwt/Cargo.toml" />
+        <option value="$PROJECT_DIR$/auth/src/model.rs" />
+        <option value="$PROJECT_DIR$/module/src/lib.rs" />
+        <option value="$PROJECT_DIR$/jwt/src/lib.rs" />
+        <option value="$PROJECT_DIR$/module_core/src/config.rs" />
+        <option value="$PROJECT_DIR$/auth/src/lib.rs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="743" />
+    <option name="width" value="1177" />
+    <option name="height" value="1080" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <autoscrollFromSource ProjectPane="true" />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="auth" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="auth" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="jwt" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="jwt" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="logger" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="logger" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="module" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="module" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="module_core" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="coreutils-rust" type="462c0819:PsiDirectoryNode" />
+              <item name="module_core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="chrono" type="20ee2d1f:SyntheticLibraryElementNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="chrono" type="20ee2d1f:SyntheticLibraryElementNode" />
+              <item name="chrono-0.4.4" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="coreutils-rust" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="chrono" type="20ee2d1f:SyntheticLibraryElementNode" />
+              <item name="chrono-0.4.4" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540412220804" />
+    <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
+    <property name="settings.editor.selected.configurable" value="org.rust.cargo.project.configurable.RustProjectConfigurable" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Cargo Command.Test test_role_provider">
+    <configuration name="Test lib::test (1)" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test --package coreutils_module --lib test" />
+      <option name="nocapture" value="true" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Test lib::test" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test --package coreutils_jwt --lib test" />
+      <option name="nocapture" value="true" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Test test_auth_context" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test --package coreutils_auth --lib test_auth_context" />
+      <option name="nocapture" value="true" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Test test_role_provider" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test --package coreutils_auth --lib test_role_provider" />
+      <option name="nocapture" value="true" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Cargo Command.Test lib::test" />
+      <item itemvalue="Cargo Command.Test test_role_provider" />
+      <item itemvalue="Cargo Command.Test test_auth_context" />
+      <item itemvalue="Cargo Command.Test lib::test (1)" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cargo Command.Test test_role_provider" />
+        <item itemvalue="Cargo Command.Test lib::test (1)" />
+        <item itemvalue="Cargo Command.Test test_auth_context" />
+        <item itemvalue="Cargo Command.Test lib::test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9f32768c-9b52-47c9-978b-e73a0c6df908" name="Default Changelist" comment="" />
+      <created>1539544499968</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1539544499968</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="72" y="0" width="1852" height="1084" extended-state="6" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25250277" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32912722" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Problems" order="9" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.5005258" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Theme Preview" order="4" />
+      <window_info anchor="right" id="Cargo" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="Maven Projects" order="8" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/json/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jwt/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/chrono-0.4.4/src/datetime.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="97" column="11" selection-start-line="97" selection-start-column="11" selection-end-line="97" selection-end-column="11" />
+          <folding>
+            <element signature="e#3317#3318#0" expanded="true" />
+            <element signature="e#3357#3358#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/auth/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/auth/src/model.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module_core/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logger/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" column="13" selection-start-line="8" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logger/src/config.rs">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logger/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-44" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-76">
+          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/json/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="18" column="13" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module_core/src/config.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" column="9" lean-forward="true" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jwt/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="18" column="75" selection-start-line="18" selection-start-column="75" selection-end-line="18" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module_core/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#740#741#0" expanded="true" />
+            <element signature="e#774#775#0" expanded="true" />
+            <element signature="e#797#798#0" expanded="true" />
+            <element signature="e#831#832#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/auth/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="30" column="33" selection-start-line="30" selection-start-column="33" selection-end-line="30" selection-end-column="33" />
+          <folding>
+            <element signature="e#543#544#0" expanded="true" />
+            <element signature="e#580#581#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

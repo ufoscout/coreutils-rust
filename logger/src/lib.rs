@@ -1,6 +1,6 @@
-extern crate log;
-extern crate fern;
 extern crate chrono;
+extern crate fern;
+extern crate log;
 
 pub mod config;
 
@@ -16,9 +16,11 @@ pub fn setup_logger(logger_config: &config::LoggerConfig) -> Result<(), fern::In
                 record.level(),
                 message
             ))
-        })
-        .level(log::LevelFilter::from_str(&logger_config.root_level).unwrap())
-        .level_for("rust_actix", log::LevelFilter::from_str(&logger_config.level).unwrap());
+        }).level(log::LevelFilter::from_str(&logger_config.root_level).unwrap())
+        .level_for(
+            "rust_actix",
+            log::LevelFilter::from_str(&logger_config.level).unwrap(),
+        );
 
     if logger_config.output_system_enabled {
         log_dispatcher = log_dispatcher.chain(std::io::stdout());

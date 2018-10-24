@@ -1,23 +1,23 @@
 extern crate coreutils_json as json;
 extern crate coreutils_jwt as jwt;
 extern crate coreutils_module as module;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 pub mod config;
 
 use std::sync::Arc;
 
 pub fn new(config: config::CoreConfig) -> CoreModule {
-
     println!("Creating CoreModule with configuration:\n{:#?}", config);
     info!("Creating CoreModule with configuration:\n{:#?}", config);
 
     let jwt = jwt::new(&config.jwt);
 
-    CoreModule{
+    CoreModule {
         config: Arc::new(config),
         json: Arc::new(json::new()),
-        jwt: Arc::new(jwt)
+        jwt: Arc::new(jwt),
     }
 }
 
@@ -28,7 +28,6 @@ pub struct CoreModule {
 }
 
 impl module::Module for CoreModule {
-
     fn init(&self) {
         info!("Core init");
     }
@@ -36,5 +35,4 @@ impl module::Module for CoreModule {
     fn start(&self) {
         info!("Core start")
     }
-
 }

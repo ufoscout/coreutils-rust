@@ -4,5 +4,5 @@ pub struct LoggerConfig {
     pub level: String,
     pub output_system_enabled: bool,
     pub output_file_enabled: bool,
-    pub output_file_name: String
+    pub output_file_name: String,
 }

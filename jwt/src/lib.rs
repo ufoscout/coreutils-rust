@@ -1,20 +1,22 @@
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate time;
+extern crate chrono;
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
 extern crate jsonwebtoken;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
 
 pub mod config;
+
+use chrono::prelude::Local;
 
 pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
     let alg = alg_from_str(&jwt_config.signature_algorithm);
 
     JwtService {
         secret: jwt_config.secret.clone(),
-        token_validity_seconds: (jwt_config.token_validity_minutes as i64) * 60,
+        token_validity_seconds: i64::from(jwt_config.token_validity_minutes) * 60,
         header_default: jsonwebtoken::Header {
             alg,
             ..jsonwebtoken::Header::default()
@@ -72,7 +74,7 @@ impl JwtService {
         &self,
         payload: &T,
     ) -> Result<String, JwtError> {
-        let issued_at = time::get_time().sec;
+        let issued_at = Local::now().timestamp();
         let token = Token {
             payload,
             sub: "".to_string(),
@@ -135,22 +137,22 @@ impl JwtService {
 mod test {
 
     extern crate failure;
-    extern crate time;
+    use super::*;
 
     #[test]
     fn should_create_jwt_string_from_token() {
         let jwt = new();
 
         let payload = MyTestClaym {
-            id: time::get_time().sec,
+            id: Local::now().timestamp(),
             name: "Red".to_string(),
         };
 
         let token = super::Token {
             payload,
             sub: "".to_string(),
-            exp: time::get_time().sec + 3600,
-            iat: time::get_time().sec,
+            exp: Local::now().timestamp() + 3600,
+            iat: Local::now().timestamp(),
         };
 
         let jwt_string = jwt.generate_from_token(&token).unwrap();
@@ -162,7 +164,7 @@ mod test {
         let jwt = new();
 
         let payload = MyTestClaym {
-            id: time::get_time().sec,
+            id: Local::now().timestamp(),
             name: "Red".to_string(),
         };
 
@@ -175,7 +177,7 @@ mod test {
         let jwt = new();
 
         let payload = MyTestClaym {
-            id: time::get_time().sec,
+            id: Local::now().timestamp(),
             name: "Red".to_string(),
         };
 
@@ -191,13 +193,13 @@ mod test {
         let jwt = new();
 
         let payload = MyTestClaym {
-            id: time::get_time().sec,
+            id: Local::now().timestamp(),
             name: "Red".to_string(),
         };
 
-        let time_before = time::get_time().sec;
+        let time_before = Local::now().timestamp();
         let jwt_string = jwt.generate_from_payload(&payload).unwrap();
-        let time_after = time::get_time().sec;
+        let time_after = Local::now().timestamp();
 
         let token: super::Token<MyTestClaym> = jwt.parse_token(&jwt_string).unwrap();
 
@@ -218,7 +220,7 @@ mod test {
         let jwt = new();
 
         let payload = MyTestClaym {
-            id: time::get_time().sec,
+            id: Local::now().timestamp(),
             name: "Red".to_string(),
         };
 
@@ -247,12 +249,12 @@ mod test {
 
         let token = super::Token {
             payload: MyTestClaym {
-                id: time::get_time().sec,
+                id: Local::now().timestamp(),
                 name: "Red".to_string(),
             },
             sub: "".to_string(),
-            exp: time::get_time().sec - 10,
-            iat: time::get_time().sec - 100,
+            exp: Local::now().timestamp() - 10,
+            iat: Local::now().timestamp() - 100,
         };
 
         let jwt_string = jwt.generate_from_token(&token).unwrap();

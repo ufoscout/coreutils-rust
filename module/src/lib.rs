@@ -1,11 +1,12 @@
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 pub trait Module: Sync + Send {
     fn init(&self);
     fn start(&self);
 }
 
-pub fn start(modules: &Vec<&dyn Module>) {
+pub fn start(modules: &[&dyn Module]) {
     info!("Begin modules 'init' phase");
     for module in modules {
         module.init();
@@ -31,24 +32,38 @@ mod test {
 
     #[test]
     fn should_init_all_then_start_all() {
-
-        let mod1 = SimpleMod { name: "one".to_string() };
-        let mod2 = SimpleMod { name: "two".to_string() };
+        let mod1 = SimpleMod {
+            name: "one".to_string(),
+        };
+        let mod2 = SimpleMod {
+            name: "two".to_string(),
+        };
 
         let modules: Vec<&dyn super::Module> = vec![&mod1, &mod2];
 
         super::start(&modules);
 
         assert_eq!(4, MODULE_TEST_ARRAY_VALUES.lock().unwrap().len());
-        assert_eq!(&"one-init".to_string(), MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(0).unwrap());
-        assert_eq!(&"two-init".to_string(), MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(1).unwrap());
-        assert_eq!(&"one-start".to_string(), MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(2).unwrap());
-        assert_eq!(&"two-start".to_string(), MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(3).unwrap());
-
+        assert_eq!(
+            &"one-init".to_string(),
+            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(0).unwrap()
+        );
+        assert_eq!(
+            &"two-init".to_string(),
+            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(1).unwrap()
+        );
+        assert_eq!(
+            &"one-start".to_string(),
+            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(2).unwrap()
+        );
+        assert_eq!(
+            &"two-start".to_string(),
+            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(3).unwrap()
+        );
     }
 
     struct SimpleMod {
-        name: String
+        name: String,
     }
 
     impl super::Module for SimpleMod {
