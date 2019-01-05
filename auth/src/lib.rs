@@ -1,13 +1,7 @@
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate failure;
-#[macro_use]
-extern crate failure_derive;
-
 pub mod model;
 
 use crate::model::Owned;
+use failure::Fail;
 use std::collections::HashMap;
 
 #[derive(Fail, Debug)]

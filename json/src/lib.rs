@@ -1,6 +1,3 @@
-extern crate serde;
-extern crate serde_json;
-
 pub fn new() -> JsonService {
     JsonService {}
 }
@@ -24,11 +21,9 @@ impl JsonService {
 }
 
 #[cfg(test)]
-#[macro_use]
-extern crate serde_derive;
-
-#[cfg(test)]
 mod test {
+
+    use serde_derive::{Serialize, Deserialize};
 
     #[test]
     fn should_serialize() {

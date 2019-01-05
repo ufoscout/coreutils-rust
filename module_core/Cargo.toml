@@ -4,9 +4,10 @@ license = "MIT"
 version = "0.4.0"
 authors = ["Francesco Cina <ufoscout@gmail.com>"]
 description = "Core Module and services."
+edition = "2018"
 
 [dependencies]
-config = "0.9"
+config_rs = { package = "config", version = "0.9" }
 coreutils_json = { path = "../json", version = "0.4.0" }
 coreutils_jwt = { path = "../jwt", version = "0.4.0" }
 coreutils_logger = { path = "../logger", version = "0.4.0" }

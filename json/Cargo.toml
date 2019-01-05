@@ -4,6 +4,7 @@ license = "MIT"
 version = "0.4.0"
 authors = ["Francesco Cina <ufoscout@gmail.com>"]
 description = "Json service."
+edition = "2018"
 
 [dependencies]
 log = "0.4"

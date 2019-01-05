@@ -1,3 +1,5 @@
+use serde_derive::{Serialize, Deserialize};
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Auth {

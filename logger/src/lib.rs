@@ -1,7 +1,3 @@
-extern crate chrono;
-extern crate fern;
-extern crate log;
-
 pub mod config;
 
 use std::str::FromStr;

@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate log;
+use log::info;
 
 pub trait Module: Sync + Send {
     fn init(&self);
@@ -18,12 +17,9 @@ pub fn start(modules: &[&dyn Module]) {
 }
 
 #[cfg(test)]
-#[macro_use]
-extern crate lazy_static;
-
-#[cfg(test)]
 mod test {
 
+    use lazy_static::lazy_static;
     use std::sync::Mutex;
 
     lazy_static! {

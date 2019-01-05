@@ -1,15 +1,8 @@
-extern crate chrono;
-extern crate failure;
-#[macro_use]
-extern crate failure_derive;
-extern crate jsonwebtoken;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-
 pub mod config;
 
 use chrono::prelude::Local;
+use failure::Fail;
+use serde_derive::{Serialize, Deserialize};
 
 pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
     let alg = alg_from_str(&jwt_config.signature_algorithm);
@@ -136,7 +129,6 @@ impl JwtService {
 #[cfg(test)]
 mod test {
 
-    extern crate failure;
     use super::*;
 
     #[test]
