@@ -7,7 +7,7 @@ extern crate failure_derive;
 
 pub mod model;
 
-use model::Owned;
+use crate::model::Owned;
 use std::collections::HashMap;
 
 #[derive(Fail, Debug)]
