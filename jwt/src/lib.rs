@@ -2,7 +2,7 @@ pub mod config;
 
 use chrono::prelude::Local;
 use failure::Fail;
-use serde_derive::{Serialize, Deserialize};
+use serde_derive::{Deserialize, Serialize};
 
 pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
     let alg = alg_from_str(&jwt_config.signature_algorithm);

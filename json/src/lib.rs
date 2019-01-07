@@ -12,6 +12,7 @@ impl JsonService {
         serde_json::to_string(value)
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub fn from_json<'a, T: serde::de::Deserialize<'a>>(
         &self,
         s: &'a str,
@@ -23,7 +24,7 @@ impl JsonService {
 #[cfg(test)]
 mod test {
 
-    use serde_derive::{Serialize, Deserialize};
+    use serde_derive::{Deserialize, Serialize};
 
     #[test]
     fn should_serialize() {

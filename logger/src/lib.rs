@@ -12,7 +12,8 @@ pub fn setup_logger(logger_config: &config::LoggerConfig) -> Result<(), fern::In
                 record.level(),
                 message
             ))
-        }).level(log::LevelFilter::from_str(&logger_config.root_level).unwrap())
+        })
+        .level(log::LevelFilter::from_str(&logger_config.root_level).unwrap())
         .level_for(
             "rust_actix",
             log::LevelFilter::from_str(&logger_config.level).unwrap(),

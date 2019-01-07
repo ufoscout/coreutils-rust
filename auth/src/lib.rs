@@ -92,7 +92,8 @@ impl<'a> AuthContext<'a> {
     }
 
     pub fn has_permission(&self, permission: &str) -> Result<&AuthContext, AuthError> {
-        self.is_authenticated()?;
+        self.is_authenticated()?.has_permission_bool(&permission);
+
         if !self.has_permission_bool(&permission) {
             return Err(AuthError::UnAuthorizedError {
                 message: format!(
@@ -219,7 +220,9 @@ impl RolesProvider for InMemoryRolesProvider {
         let mut result = vec![];
         for name in names {
             let roles = self.roles_by_name.get(name);
-            if let Some(t) = roles { result.push(t) }
+            if let Some(t) = roles {
+                result.push(t)
+            }
         }
         result
     }
@@ -291,6 +294,7 @@ mod test_role_provider {
 mod test_auth_context {
 
     use super::model::{Auth, Owned, Role};
+    use crate::AuthError;
 
     #[test]
     fn should_be_authenticated() {
@@ -379,7 +383,10 @@ mod test_auth_context {
             roles: vec!["ADMIN".to_string(), "USER".to_string()],
         };
         let auth = auth_service.auth(user);
-        assert!(auth.has_role("USER").and_then(|auth| auth.has_role("USER")).is_ok());
+        assert!(auth
+            .has_role("USER")
+            .and_then(|auth| auth.has_role("USER"))
+            .is_ok());
     }
 
     #[test]
@@ -577,11 +584,9 @@ mod test_auth_context {
             roles: vec!["USER".to_string(), "ADMIN".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .has_any_permission(&["delete", "superDelete"])
-                .is_ok()
-        );
+        assert!(auth_context
+            .has_any_permission(&["delete", "superDelete"])
+            .is_ok());
     }
 
     #[test]
@@ -606,11 +611,9 @@ mod test_auth_context {
             roles: vec!["USER".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .has_any_permission(&["delete", "superAdmin"])
-                .is_err()
-        );
+        assert!(auth_context
+            .has_any_permission(&["delete", "superAdmin"])
+            .is_err());
     }
 
     #[test]
@@ -639,11 +642,9 @@ mod test_auth_context {
             roles: vec!["USER".to_string(), "ADMIN".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .has_all_permissions(&["delete", "superDelete"])
-                .is_ok()
-        );
+        assert!(auth_context
+            .has_all_permissions(&["delete", "superDelete"])
+            .is_ok());
     }
 
     #[test]
@@ -668,11 +669,9 @@ mod test_auth_context {
             roles: vec!["USER".to_string(), "ADMIN".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .has_all_permissions(&["delete", "superDelete"])
-                .is_err()
-        );
+        assert!(auth_context
+            .has_all_permissions(&["delete", "superDelete"])
+            .is_err());
     }
 
     #[test]
@@ -723,11 +722,9 @@ mod test_auth_context {
             roles: vec!["ROLE_1".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .is_owner_or_has_role(&Ownable { owner_id: 1 }, "ROLE_1")
-                .is_ok()
-        );
+        assert!(auth_context
+            .is_owner_or_has_role(&Ownable { owner_id: 1 }, "ROLE_1")
+            .is_ok());
     }
 
     #[test]
@@ -746,11 +743,9 @@ mod test_auth_context {
             roles: vec!["ROLE_1".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .is_owner_or_has_role(&Ownable { owner_id: 0 }, "ROLE_2")
-                .is_ok()
-        );
+        assert!(auth_context
+            .is_owner_or_has_role(&Ownable { owner_id: 0 }, "ROLE_2")
+            .is_ok());
     }
 
     #[test]
@@ -769,11 +764,9 @@ mod test_auth_context {
             roles: vec!["ROLE_1".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .is_owner_or_has_role(&Ownable { owner_id: 1 }, "ROLE_2")
-                .is_err()
-        );
+        assert!(auth_context
+            .is_owner_or_has_role(&Ownable { owner_id: 1 }, "ROLE_2")
+            .is_err());
     }
 
     #[test]
@@ -792,11 +785,9 @@ mod test_auth_context {
             roles: vec!["ROLE_1".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .is_owner_or_has_permission(&Ownable { owner_id: 1 }, "access_1")
-                .is_ok()
-        );
+        assert!(auth_context
+            .is_owner_or_has_permission(&Ownable { owner_id: 1 }, "access_1")
+            .is_ok());
     }
 
     #[test]
@@ -815,11 +806,9 @@ mod test_auth_context {
             roles: vec!["ROLE_1".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .is_owner_or_has_permission(&Ownable { owner_id: 0 }, "access_2")
-                .is_ok()
-        );
+        assert!(auth_context
+            .is_owner_or_has_permission(&Ownable { owner_id: 0 }, "access_2")
+            .is_ok());
     }
 
     #[test]
@@ -838,11 +827,84 @@ mod test_auth_context {
             roles: vec!["ROLE_1".to_string()],
         };
         let auth_context = auth_service.auth(user);
-        assert!(
-            auth_context
-                .is_owner_or_has_permission(&Ownable { owner_id: 1 }, "access_2")
-                .is_err()
-        );
+        assert!(auth_context
+            .is_owner_or_has_permission(&Ownable { owner_id: 1 }, "access_2")
+            .is_err());
+    }
+
+    #[test]
+    fn should_return_true_if_all_matches() -> Result<(), AuthError> {
+        let roles = vec![Role {
+            name: "ROLE_1".to_string(),
+            permissions: vec!["access_1".to_string()],
+        }];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService {
+            roles_provider: provider,
+        };
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string(), "ROLE_2".to_string()],
+        };
+        let auth_context = auth_service.auth(user);
+
+        assert!(auth_context
+            .has_role("ROLE_1")?
+            .has_any_role(&vec!["ROLE_1", "ROLE_3"])
+            .is_ok());
+
+        assert!(auth_context
+            .has_role("ROLE_3")
+            .and_then(|auth| auth.has_any_role(&vec!["ROLE_1", "ROLE_3"]))
+            .is_err());
+
+        assert!(auth_context
+            .has_role("ROLE_1")
+            .and_then(|auth| auth.has_all_roles(&vec!["ROLE_1", "ROLE_3"]))
+            .is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn should_return_true_if_any_matches() -> Result<(), AuthError> {
+        let roles = vec![Role {
+            name: "ROLE_1".to_string(),
+            permissions: vec!["access_1".to_string()],
+        }];
+        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let auth_service = super::AuthService {
+            roles_provider: provider,
+        };
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ROLE_1".to_string(), "ROLE_2".to_string()],
+        };
+        let auth_context = auth_service.auth(user);
+
+        assert!(auth_context
+            .has_role("ROLE_1")
+            .or_else(|_err| auth_context
+                .has_any_role(&vec!["ROLE_1", "ROLE_3"])?
+                .has_role("ROLE_1"))
+            .is_ok());
+
+        assert!(auth_context
+            .has_role("ROLE_3")
+            .or_else(|_err| auth_context.has_any_role(&vec!["ROLE_1", "ROLE_3"]))
+            .is_ok());
+
+        assert!(auth_context
+            .has_role("ROLE_1")
+            .or_else(|_err| auth_context.has_all_roles(&vec!["ROLE_1", "ROLE_3"]))
+            .is_ok());
+
+        assert!(auth_context
+            .has_role("ROLE_3")
+            .or_else(|_err| auth_context.has_all_roles(&vec!["ROLE_1", "ROLE_3"]))
+            .is_err());
+        Ok(())
     }
 
     struct Ownable {
