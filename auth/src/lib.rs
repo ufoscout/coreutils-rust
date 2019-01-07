@@ -368,6 +368,21 @@ mod test_auth_context {
     }
 
     #[test]
+    fn should_have_role_chained() {
+        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let auth_service = super::AuthService {
+            roles_provider: provider,
+        };
+        let user = Auth {
+            id: 0,
+            username: "name".to_string(),
+            roles: vec!["ADMIN".to_string(), "USER".to_string()],
+        };
+        let auth = auth_service.auth(user);
+        assert!(auth.has_role("USER").and_then(|auth| auth.has_role("USER")).is_ok());
+    }
+
+    #[test]
     fn should_not_have_role() {
         let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
         let auth_service = super::AuthService {
