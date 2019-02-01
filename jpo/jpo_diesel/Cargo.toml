@@ -1,0 +1,20 @@
+[package]
+name = "coreutils_jpo_diesel"
+license = "MIT"
+version = "0.4.0"
+authors = ["Francesco Cina <ufoscout@gmail.com>"]
+description = ""
+edition = "2018"
+
+[dependencies]
+diesel = { version = "1.0" }
+log = "0.4"
+jpo = { package = "coreutils_jpo", path = "../jpo", version = "0.4.0" }
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+
+[dev-dependencies]
+diesel_migrations = "1.0"
+diesel = { version = "1.0", features = ["postgres"] }
+testcontainers = "0.4"
