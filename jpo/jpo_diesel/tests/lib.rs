@@ -3,21 +3,22 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use crate::models::NewPost;
-use crate::models::Post;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-use crate::schema::posts;
-use crate::tc::postgres;
 use testcontainers::*;
-
-mod tc;
 
 embed_migrations!("./migrations/");
 
 pub fn establish_connection() -> PgConnection {
-    let database_url = "postgres://postgres:postgres@127.0.0.1:5432/postgres";
+
+    let docker = clients::Cli::default();
+    let node = docker.run(postgres_image());
+
+    let database_url = format!(
+        "postgres://postgres:postgres@127.0.0.1:{}/postgres",
+        node.get_host_port(5432).unwrap()
+    );
 
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
@@ -31,7 +32,7 @@ pub fn upgrade_db(conn: &PgConnection) {
     embedded_migrations::run_with_output(conn, &mut std::io::stdout())
         .expect(&format!("Should run the migrations"));
 }
-
+/*
 pub fn create_post<'a>(conn: &PgConnection, title: &'a str, body: &'a str) -> Post {
     use schema::posts;
 
@@ -45,13 +46,14 @@ pub fn create_post<'a>(conn: &PgConnection, title: &'a str, body: &'a str) -> Po
         .get_result(conn)
         .expect("Error saving new post")
 }
+*/
 
 #[test]
 fn should_perform_a_query() {
     let connection = establish_connection();
-
     upgrade_db(&connection);
 
+    /*
     let new_post = create_post(&connection, "my_post_title", "my_post_body");
     println!("Created post with id {}", new_post.id);
 
@@ -81,6 +83,7 @@ fn should_perform_a_query() {
         .expect("Error deleting posts");
 
     assert_eq!(1, num_deleted);
+    */
 }
 
 mod schema {
@@ -96,22 +99,28 @@ mod schema {
 }
 
 mod models {
-    use super::schema::posts;
+    use super::schema::*;
     use serde_json::Value;
 
     #[derive(Insertable)]
-    #[table_name = "TEST_DATA"]
-    pub struct NewTestData<'a> {
+    #[table_name = "test_table"]
+    pub struct NewTestData {
         pub version: i32,
         pub data: Value,
     }
 
     #[derive(Queryable)]
-    #[table_name = "TEST_DATA"]
     pub struct TestData {
         pub id: i64,
         pub version: i32,
         pub data: Value,
     }
 
+}
+
+fn postgres_image() -> testcontainers::images::generic::GenericImage {
+    testcontainers::images::generic::GenericImage::new("postgres:11-alpine")
+        .with_wait_for(images::generic::WaitFor::message_on_stderr(
+            "database system is ready to accept connections",
+        ))
 }

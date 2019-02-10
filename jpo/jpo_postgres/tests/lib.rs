@@ -4,12 +4,10 @@ use coreutils_jpo_postgres::*;
 use postgres::{Connection, TlsMode};
 use serde_derive::{Deserialize, Serialize};
 
-mod tc;
-
 #[test]
 fn postgres_basic_crud() {
     let docker = clients::Cli::default();
-    let node = docker.run(tc::postgres::Postgres::default());
+    let node = docker.run(postgres_image());
 
     let conn = Connection::connect(
         format!(
@@ -48,10 +46,17 @@ fn postgres_basic_crud() {
 
 }
 
-type TestModel = Model<TestData>;
+//type TestModel = Model<TestData>;
 
 #[derive(Clone, Serialize, Deserialize)]
 struct TestData {
     first_name: String,
     last_name: String,
+}
+
+fn postgres_image() -> images::generic::GenericImage {
+    images::generic::GenericImage::new("postgres:11-alpine")
+        .with_wait_for(images::generic::WaitFor::message_on_stderr(
+            "database system is ready to accept connections",
+        ))
 }
