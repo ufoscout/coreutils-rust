@@ -2,9 +2,6 @@
 
 members = [
     "auth",
-    "jpo/jpo",
-    "jpo/jpo_postgres",
-    "jpo/jpo_diesel",
     "json",
     "jwt",
     "logger",
