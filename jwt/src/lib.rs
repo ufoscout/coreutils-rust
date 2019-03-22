@@ -1,7 +1,7 @@
 pub mod config;
 
 use chrono::prelude::Local;
-use failure::Fail;
+use err_derive::Error;
 use serde_derive::{Deserialize, Serialize};
 
 pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
@@ -52,13 +52,13 @@ pub struct Token<T> {
     //jti: String,
 }
 
-#[derive(Fail, Debug)]
+#[derive(Error, Debug)]
 pub enum JwtError {
-    #[fail(display = "InvalidTokenError: [{}]", message)]
+    #[error(display = "InvalidTokenError: [{}]", message)]
     InvalidTokenError { message: String },
-    #[fail(display = "ExpiredTokenError: [{}]", message)]
+    #[error(display = "ExpiredTokenError: [{}]", message)]
     ExpiredTokenError { message: String },
-    #[fail(display = "GenerateTokenError: [{}]", message)]
+    #[error(display = "GenerateTokenError: [{}]", message)]
     GenerateTokenError { message: String },
 }
 

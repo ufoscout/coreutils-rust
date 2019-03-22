@@ -1,14 +1,14 @@
 pub mod model;
 
 use crate::model::Owned;
-use failure::Fail;
+use err_derive::Error;
 use std::collections::HashMap;
 
-#[derive(Fail, Debug)]
+#[derive(Error, Debug)]
 pub enum AuthError {
-    #[fail(display = "UnAuthenticatedError")]
+    #[error(display = "UnAuthenticatedError")]
     UnAuthenticatedError {},
-    #[fail(display = "UnAuthorizedError [{}]", message)]
+    #[error(display = "UnAuthorizedError [{}]", message)]
     UnAuthorizedError { message: String },
 }
 
