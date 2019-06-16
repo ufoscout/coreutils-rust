@@ -3,6 +3,7 @@ pub mod model;
 use crate::model::Owned;
 use err_derive::Error;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 #[derive(Error, Debug)]
 pub enum AuthError {
@@ -12,32 +13,36 @@ pub enum AuthError {
     UnAuthorizedError { message: String },
 }
 
-pub struct AuthService {
-    roles_provider: Box<RolesProvider>,
+#[derive(Clone)]
+pub struct AuthService<T: RolesProvider> {
+    roles_provider: T,
 }
 
-pub fn new(roles_provider: Box<RolesProvider>) -> AuthService {
-    AuthService { roles_provider }
-}
 
-impl AuthService {
+impl <T: RolesProvider> AuthService<T> {
+
+    pub fn new(roles_provider: T) -> AuthService<T> {
+        AuthService { roles_provider }
+    }
+
     pub fn auth(&self, auth: model::Auth) -> AuthContext {
-        AuthContext::new(auth, &*self.roles_provider)
+        AuthContext::new(auth, &self.roles_provider)
     }
 }
 
 pub struct AuthContext<'a> {
     pub auth: model::Auth,
-    permissions: Vec<&'a String>,
+    permissions: Vec<&'a str>,
 }
 
 impl<'a> AuthContext<'a> {
-    pub fn new(auth: model::Auth, roles_provider: &RolesProvider) -> AuthContext {
+
+    pub fn new<T: RolesProvider>(auth: model::Auth, roles_provider: &T) -> AuthContext {
         let mut permissions = vec![];
 
         for role in roles_provider.get_by_name(&auth.roles) {
             for permission in &role.permissions {
-                permissions.push(permission)
+                permissions.push(permission.as_str())
             }
         }
 
@@ -175,44 +180,47 @@ impl<'a> AuthContext<'a> {
     }
 
     fn has_role_bool(&self, role: &str) -> bool {
-        self.auth.roles.contains(&role.to_string())
+        self.auth.roles.iter().any(|x| x == role)
     }
 
     fn has_permission_bool(&self, permission: &str) -> bool {
-        self.permissions.contains(&&permission.to_string())
+        self.permissions.contains(&permission )
     }
 }
 
-pub trait RolesProvider: Send + Sync {
-    fn get_all(&self) -> &Vec<model::Role>;
+pub trait RolesProvider: Send + Sync + Clone{
+    fn get_all(&self) -> &[model::Role];
 
     fn get_by_name(&self, names: &[String]) -> Vec<&model::Role>;
 }
 
+#[derive(Clone)]
 pub struct InMemoryRolesProvider {
-    all_roles: Vec<model::Role>,
-    roles_by_name: HashMap<String, model::Role>,
+    all_roles: Arc<[model::Role]>,
+    roles_by_name: Arc<HashMap<String, model::Role>>,
 }
 
 impl InMemoryRolesProvider {
-    pub fn new(all_roles: Vec<model::Role>) -> InMemoryRolesProvider {
-        let mut provider = InMemoryRolesProvider {
-            all_roles,
-            roles_by_name: HashMap::new(),
-        };
 
-        for role in &provider.all_roles {
-            provider
-                .roles_by_name
+    pub fn new(all_roles: Vec<model::Role>) -> InMemoryRolesProvider {
+
+        let mut roles_by_name = HashMap::new();
+
+        for role in all_roles.iter() {
+            roles_by_name
                 .insert(role.name.clone(), role.clone());
         }
 
-        provider
+        InMemoryRolesProvider {
+            all_roles: all_roles.into(),
+            roles_by_name: Arc::new(roles_by_name),
+        }
     }
+
 }
 
 impl RolesProvider for InMemoryRolesProvider {
-    fn get_all(&self) -> &Vec<model::Role> {
+    fn get_all(&self) -> &[model::Role] {
         &self.all_roles
     }
 
@@ -283,7 +291,7 @@ mod test_role_provider {
             },
         ];
         let provider = super::InMemoryRolesProvider::new(roles.clone());
-        let get_by_name = provider.get_by_name(&vec!["RoleOne".to_string()]);
+        let get_by_name = provider.get_by_name(&vec!["RoleOne".to_owned()]);
         assert!(!get_by_name.is_empty());
         assert_eq!(1, get_by_name.len());
         assert_eq!("RoleOne", &get_by_name[0].name);
@@ -298,7 +306,7 @@ mod test_auth_context {
 
     #[test]
     fn should_be_authenticated() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -313,7 +321,7 @@ mod test_auth_context {
 
     #[test]
     fn should_be_not_authenticated() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -328,7 +336,7 @@ mod test_auth_context {
 
     #[test]
     fn should_be_not_authenticated_even_if_has_role() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -343,7 +351,7 @@ mod test_auth_context {
 
     #[test]
     fn should_have_role() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -358,7 +366,7 @@ mod test_auth_context {
 
     #[test]
     fn should_have_role_2() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -373,7 +381,7 @@ mod test_auth_context {
 
     #[test]
     fn should_have_role_chained() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -391,7 +399,7 @@ mod test_auth_context {
 
     #[test]
     fn should_not_have_role() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -406,7 +414,7 @@ mod test_auth_context {
 
     #[test]
     fn should_have_any_role() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -421,7 +429,7 @@ mod test_auth_context {
 
     #[test]
     fn should_not_have_any_role() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -436,7 +444,7 @@ mod test_auth_context {
 
     #[test]
     fn should_have_all_roles() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -455,7 +463,7 @@ mod test_auth_context {
 
     #[test]
     fn should_not_have_all_roles() {
-        let provider = Box::new(super::InMemoryRolesProvider::new(vec![]));
+        let provider = super::InMemoryRolesProvider::new(vec![]);
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -474,7 +482,7 @@ mod test_auth_context {
             name: "ADMIN".to_string(),
             permissions: vec!["delete".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -499,7 +507,7 @@ mod test_auth_context {
                 permissions: vec!["create".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -524,7 +532,7 @@ mod test_auth_context {
                 permissions: vec!["delete".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -549,7 +557,7 @@ mod test_auth_context {
                 permissions: vec!["delete".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -574,7 +582,7 @@ mod test_auth_context {
                 permissions: vec!["delete".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -601,7 +609,7 @@ mod test_auth_context {
                 permissions: vec!["delete".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -632,7 +640,7 @@ mod test_auth_context {
                 permissions: vec!["delete".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -659,7 +667,7 @@ mod test_auth_context {
                 permissions: vec!["delete".to_string()],
             },
         ];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -677,7 +685,7 @@ mod test_auth_context {
     #[test]
     fn should_be_the_owner() {
         let roles = vec![];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -693,7 +701,7 @@ mod test_auth_context {
     #[test]
     fn should_not_be_the_owner() {
         let roles = vec![];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -712,7 +720,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -733,7 +741,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -754,7 +762,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -775,7 +783,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -796,7 +804,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -817,7 +825,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -838,7 +846,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
@@ -872,7 +880,7 @@ mod test_auth_context {
             name: "ROLE_1".to_string(),
             permissions: vec!["access_1".to_string()],
         }];
-        let provider = Box::new(super::InMemoryRolesProvider::new(roles.clone()));
+        let provider = super::InMemoryRolesProvider::new(roles.clone());
         let auth_service = super::AuthService {
             roles_provider: provider,
         };
