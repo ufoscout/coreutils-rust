@@ -4,6 +4,7 @@ use chrono::prelude::Local;
 use err_derive::Error;
 use serde_derive::{Deserialize, Serialize};
 
+/*
 fn alg_from_str(s: &str) -> jsonwebtoken::Algorithm {
     match s {
         "HS256" => jsonwebtoken::Algorithm::HS256,
@@ -15,6 +16,7 @@ fn alg_from_str(s: &str) -> jsonwebtoken::Algorithm {
         _ => panic!("Unknown JWT signature algorithm: [{}]", s),
     }
 }
+*/
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,7 +52,9 @@ pub struct JwtService {
 impl JwtService {
 
     pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
-        let alg = alg_from_str(&jwt_config.signature_algorithm);
+        //let alg = alg_from_str(&jwt_config.signature_algorithm);
+
+        let alg = jwt_config.signature_algorithm;
 
         JwtService {
             secret: jwt_config.secret.clone(),
@@ -269,7 +273,7 @@ mod test {
     fn new() -> super::JwtService {
         super::JwtService::new(&super::config::JwtConfig {
             secret: "mySecret".to_string(),
-            signature_algorithm: "HS512".to_string(),
+            signature_algorithm: jsonwebtoken::Algorithm::HS512,
             token_validity_minutes: 60,
         })
     }

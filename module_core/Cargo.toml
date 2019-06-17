@@ -7,12 +7,11 @@ description = "Core Module and services."
 edition = "2018"
 
 [dependencies]
-config_rs = { package = "config", version = "0.9" }
 coreutils_json = { path = "../json", version = "0.4.0" }
 coreutils_jwt = { path = "../jwt", version = "0.4.0" }
 coreutils_logger = { path = "../logger", version = "0.4.0" }
 coreutils_module = { path = "../module", version = "0.4.0" }
 log = "0.4"
+structopt = "0.2"
 
 [dev-dependencies]
-lazy_static = "1.0"

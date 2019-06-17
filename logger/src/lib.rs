@@ -32,14 +32,15 @@ pub fn setup_logger(logger_config: &config::LoggerConfig) -> Result<(), LoggerEr
                 message
             ))
         })
-        .level(log::LevelFilter::from_str(&logger_config.root_level).map_err(|err| {
+        .level(log::LevelFilter::from_str(&logger_config.level).map_err(|err| {
             LoggerError::LoggerConfigurationError {
                 message: format!(
                     "The specified logger level is not valid: [{}]. err: {}",
                     &logger_config.level, err
                 ),
             }
-        })?)
+        })?);
+        /*
         .level_for(
             "rust_actix",
             log::LevelFilter::from_str(&logger_config.level).map_err(|err| {
@@ -49,15 +50,20 @@ pub fn setup_logger(logger_config: &config::LoggerConfig) -> Result<(), LoggerEr
                         &logger_config.level, err
                     ),
                 }
-            })?,
-        );
+            })?);
+            */
 
-    if logger_config.output_system_enabled {
+
+    if logger_config.stdout_output {
         log_dispatcher = log_dispatcher.chain(std::io::stdout());
     }
 
-    if logger_config.output_file_enabled {
-        log_dispatcher = log_dispatcher.chain(fern::log_file(&logger_config.output_file_name)?);
+    if logger_config.stderr_output {
+        log_dispatcher = log_dispatcher.chain(std::io::stderr());
+    }
+
+    if let Some(path) = &logger_config.file_output_path {
+        log_dispatcher = log_dispatcher.chain(fern::log_file(&path)?)
     }
 
     log_dispatcher.apply()?;
