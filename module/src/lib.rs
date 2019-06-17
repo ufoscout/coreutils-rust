@@ -1,77 +1,139 @@
+use err_derive::Error;
 use log::info;
 
-pub trait Module: Sync + Send {
-    fn init(&self);
-    fn start(&self);
+#[derive(Error, Debug)]
+pub enum ModuleError {
+    #[error(display = "ModuleBuilderError: [{}]", message)]
+    ModuleBuilderError { message: String },
+    #[error(display = "ModuleStartError: [{}]", message)]
+    ModuleStartError { message: String },
 }
 
-pub fn start(modules: &[&dyn Module]) {
-    info!("Begin modules 'init' phase");
-    for module in modules {
-        module.init();
-    }
+pub trait ModuleBuilder<T: Module> {
+    fn build(&self) -> Result<T, ModuleError>;
+}
+
+pub trait Module {
+    fn start(&mut self) -> Result<(), ModuleError>;
+}
+
+pub fn start(modules: &mut [&mut dyn Module]) -> Result<(), ModuleError> {
     info!("Begin modules 'start' phase");
-    for module in modules {
-        module.start();
+    for module in modules.iter_mut() {
+        module.start()?;
     }
+    Ok(())
 }
 
 #[cfg(test)]
 mod test {
 
-    use lazy_static::lazy_static;
     use std::sync::Mutex;
-
-    lazy_static! {
-        static ref MODULE_TEST_ARRAY_VALUES: Mutex<Vec<String>> = Mutex::new(vec![]);
-    }
+    use crate::ModuleError;
+    use std::rc::Rc;
 
     #[test]
-    fn should_init_all_then_start_all() {
-        let mod1 = SimpleMod {
+    fn should_start_all() {
+
+        let output = Rc::new(Mutex::new(vec![]));
+
+        let mut mod1 = SimpleModOne {
+            output: output.clone(),
             name: "one".to_string(),
         };
-        let mod2 = SimpleMod {
+        let mut mod2 = SimpleModTwo {
+            output: output.clone(),
             name: "two".to_string(),
+            fail: false
         };
 
-        let modules: Vec<&dyn super::Module> = vec![&mod1, &mod2];
+        let mut modules: Vec<&mut dyn super::Module> = vec![&mut mod1, &mut mod2];
 
-        super::start(&modules);
+        let result = super::start(modules.as_mut());
 
-        assert_eq!(4, MODULE_TEST_ARRAY_VALUES.lock().unwrap().len());
-        assert_eq!(
-            &"one-init".to_string(),
-            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(0).unwrap()
-        );
-        assert_eq!(
-            &"two-init".to_string(),
-            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(1).unwrap()
-        );
+        assert!(result.is_ok());
+        assert_eq!(2, output.lock().unwrap().len());
         assert_eq!(
             &"one-start".to_string(),
-            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(2).unwrap()
+            output.lock().unwrap().get(0).unwrap()
         );
         assert_eq!(
             &"two-start".to_string(),
-            MODULE_TEST_ARRAY_VALUES.lock().unwrap().get(3).unwrap()
+            output.lock().unwrap().get(1).unwrap()
         );
     }
 
-    struct SimpleMod {
+    #[test]
+    fn should_fail_on_start() {
+
+        let output = Rc::new(Mutex::new(vec![]));
+
+        let mut mod1 = SimpleModOne {
+            output: output.clone(),
+            name: "one".to_string(),
+        };
+        let mut mod2 = SimpleModTwo {
+            output: output.clone(),
+            name: "two".to_string(),
+            fail: true
+        };
+
+        let mut modules: Vec<&mut dyn super::Module> = vec![&mut mod1, &mut mod2];
+
+        let result = super::start(&mut modules);
+
+        assert!(result.is_err());
+
+        match result {
+            Err(err) => match err {
+                ModuleError::ModuleStartError {message} => assert_eq!("test_failure", message),
+                _ => assert!(false)
+            },
+            _ => assert!(false)
+        }
+
+        assert_eq!(1, output.lock().unwrap().len());
+        assert_eq!(
+            &"one-start".to_string(),
+            output.lock().unwrap().get(0).unwrap()
+        );
+
+    }
+
+    #[derive(Clone)]
+    struct SimpleModOne {
+        output: Rc<Mutex<Vec<String>>>,
         name: String,
     }
 
-    impl super::Module for SimpleMod {
-        fn init(&self) {
-            let mut owned = self.name.to_owned();
-            owned.push_str(&"-init");
-            MODULE_TEST_ARRAY_VALUES.lock().unwrap().push(owned)
-        }
-        fn start(&self) {
+    impl super::Module for SimpleModOne {
+        fn start(&mut self) -> Result<(), ModuleError> {
             let mut owned = self.name.to_owned();
             owned.push_str(&"-start");
-            MODULE_TEST_ARRAY_VALUES.lock().unwrap().push(owned)
+            self.output.lock().unwrap().push(owned);
+            Ok(())
         }
     }
+
+    #[derive(Clone)]
+    struct SimpleModTwo {
+        output: Rc<Mutex<Vec<String>>>,
+        name: String,
+        fail: bool,
+    }
+
+    impl super::Module for SimpleModTwo {
+        fn start(&mut self) -> Result<(), ModuleError> {
+            if self.fail {
+                return Err(ModuleError::ModuleStartError {message: "test_failure".to_owned()})
+            }
+
+            let mut owned = self.name.to_owned();
+            owned.push_str(&"-start");
+            self.output.lock().unwrap().push(owned);
+
+            Ok(())
+        }
+    }
+
 }

@@ -7,7 +7,7 @@ description = "Small building block for modularized applications."
 edition = "2018"
 
 [dependencies]
+err-derive = "0.1"
 log = "0.4"
 
 [dev-dependencies]
-lazy_static = "1.0"

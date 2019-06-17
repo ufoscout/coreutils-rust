@@ -267,7 +267,7 @@ mod test {
     }
 
     fn new() -> super::JwtService {
-        super::new(&super::config::JwtConfig {
+        super::JwtService::new(&super::config::JwtConfig {
             secret: "mySecret".to_string(),
             signature_algorithm: "HS512".to_string(),
             token_validity_minutes: 60,
