@@ -42,6 +42,7 @@ pub enum JwtError {
     GenerateTokenError { message: String },
 }
 
+#[derive(Clone)]
 pub struct JwtService {
     secret: String,
     token_validity_seconds: i64,

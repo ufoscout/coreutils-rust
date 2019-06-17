@@ -2,6 +2,7 @@ pub fn new() -> JsonService {
     JsonService {}
 }
 
+#[derive(Clone)]
 pub struct JsonService {}
 
 impl JsonService {
