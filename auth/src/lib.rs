@@ -38,14 +38,7 @@ pub struct AuthContext<'a> {
 impl<'a> AuthContext<'a> {
 
     pub fn new<T: RolesProvider>(auth: model::Auth, roles_provider: &T) -> AuthContext {
-        let mut permissions = vec![];
-
-        for role in roles_provider.get_by_name(&auth.roles) {
-            for permission in &role.permissions {
-                permissions.push(permission.as_str())
-            }
-        }
-
+        let permissions = roles_provider.get_permissions_by_role_name(&auth.roles);
         AuthContext { auth, permissions }
     }
 
@@ -192,6 +185,9 @@ pub trait RolesProvider: Send + Sync + Clone{
     fn get_all(&self) -> &[model::Role];
 
     fn get_by_name(&self, names: &[String]) -> Vec<&model::Role>;
+
+    fn get_permissions_by_role_name(&self, role_names: &[String]) -> Vec<&str>;
+
 }
 
 #[derive(Clone)]
@@ -233,6 +229,18 @@ impl RolesProvider for InMemoryRolesProvider {
             }
         }
         result
+    }
+
+    fn get_permissions_by_role_name(&self, role_names: &[String]) -> Vec<&str> {
+        let mut permissions = vec![];
+        for name in role_names {
+            if let Some(role) = self.roles_by_name.get(name) {
+                for permission in &role.permissions {
+                    permissions.push(permission.as_str())
+                }
+            }
+        }
+        permissions
     }
 }
 

@@ -4,20 +4,6 @@ use chrono::prelude::Local;
 use err_derive::Error;
 use serde_derive::{Deserialize, Serialize};
 
-pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
-    let alg = alg_from_str(&jwt_config.signature_algorithm);
-
-    JwtService {
-        secret: jwt_config.secret.clone(),
-        token_validity_seconds: i64::from(jwt_config.token_validity_minutes) * 60,
-        header_default: jsonwebtoken::Header {
-            alg,
-            ..jsonwebtoken::Header::default()
-        },
-        validation_default: jsonwebtoken::Validation::new(alg),
-    }
-}
-
 fn alg_from_str(s: &str) -> jsonwebtoken::Algorithm {
     match s {
         "HS256" => jsonwebtoken::Algorithm::HS256,
@@ -30,18 +16,10 @@ fn alg_from_str(s: &str) -> jsonwebtoken::Algorithm {
     }
 }
 
-pub struct JwtService {
-    secret: String,
-    token_validity_seconds: i64,
-    header_default: jsonwebtoken::Header,
-    validation_default: jsonwebtoken::Validation,
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Token<T> {
     payload: T,
-
     // The subject of the token
     sub: String,
     // The expiration date of the token
@@ -62,7 +40,29 @@ pub enum JwtError {
     GenerateTokenError { message: String },
 }
 
+pub struct JwtService {
+    secret: String,
+    token_validity_seconds: i64,
+    header_default: jsonwebtoken::Header,
+    validation_default: jsonwebtoken::Validation,
+}
+
 impl JwtService {
+
+    pub fn new(jwt_config: &config::JwtConfig) -> JwtService {
+        let alg = alg_from_str(&jwt_config.signature_algorithm);
+
+        JwtService {
+            secret: jwt_config.secret.clone(),
+            token_validity_seconds: i64::from(jwt_config.token_validity_minutes) * 60,
+            header_default: jsonwebtoken::Header {
+                alg,
+                ..jsonwebtoken::Header::default()
+            },
+            validation_default: jsonwebtoken::Validation::new(alg),
+        }
+    }
+
     pub fn generate_from_payload<T: serde::ser::Serialize>(
         &self,
         payload: &T,
