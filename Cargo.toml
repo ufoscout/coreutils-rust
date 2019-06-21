@@ -6,5 +6,4 @@ members = [
     "jwt",
     "logger",
     "module",
-    "module_core"
 ] 

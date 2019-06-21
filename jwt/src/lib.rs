@@ -137,6 +137,13 @@ mod test {
     use super::*;
 
     #[test]
+    fn service_should_be_send_and_sync() {
+        call_me_with_send_and_sync(new());
+    }
+
+    fn call_me_with_send_and_sync<T: Send + Sync>(_: T) {}
+
+    #[test]
     fn should_create_jwt_string_from_token() {
         let jwt = new();
 

@@ -28,6 +28,13 @@ mod test {
     use serde_derive::{Deserialize, Serialize};
 
     #[test]
+    fn service_should_be_send_and_sync() {
+        call_me_with_send_and_sync(super::new());
+    }
+
+    fn call_me_with_send_and_sync<T: Send + Sync>(_: T) {}
+
+    #[test]
     fn should_serialize() {
         let json = super::new();
 

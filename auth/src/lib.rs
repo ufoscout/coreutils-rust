@@ -181,7 +181,7 @@ impl<'a> AuthContext<'a> {
     }
 }
 
-pub trait RolesProvider: Send + Sync + Clone{
+pub trait RolesProvider: Send + Sync + Clone {
     fn get_all(&self) -> &[model::Role];
 
     fn get_by_name(&self, names: &[String]) -> Vec<&model::Role>;
@@ -311,6 +311,18 @@ mod test_auth_context {
 
     use super::model::{Auth, Owned, Role};
     use crate::AuthError;
+
+    #[test]
+    fn service_should_be_send_and_sync() {
+        let provider = super::InMemoryRolesProvider::new(vec![]);
+        let auth_service = super::AuthService {
+            roles_provider: provider,
+        };
+
+        call_me_with_send_and_sync(auth_service);
+    }
+
+    fn call_me_with_send_and_sync<T: Send + Sync>(_: T) {}
 
     #[test]
     fn should_be_authenticated() {

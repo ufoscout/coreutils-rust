@@ -10,6 +10,5 @@ script = [
   "cd ./jwt          && cargo publish && cd ..",
   "cd ./logger       && cargo publish && cd ..",
   "cd ./module       && cargo publish && cd ..",
-  "cd ./module_core  && cargo publish && cd .."
 ]
 
