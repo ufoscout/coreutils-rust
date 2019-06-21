@@ -21,13 +21,13 @@ fn alg_from_str(s: &str) -> jsonwebtoken::Algorithm {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Token<T> {
-    payload: T,
+    pub payload: T,
     // The subject of the token
-    sub: String,
+    pub sub: String,
     // The expiration date of the token
-    exp: i64,
+    pub exp: i64,
     // The issued at field
-    iat: i64,
+    pub iat: i64,
     // The token id
     //jti: String,
 }
